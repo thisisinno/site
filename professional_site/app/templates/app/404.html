@@ -1,0 +1,2 @@
+{% extends "app/base.html" %}{% block title %}Page Not Found | {{ site_profile.website_name }}{% endblock %}
+{% block content %}<section class="error-page section"><div class="shell narrow"><span class="eyebrow">Error 404</span><h1>This page could not be found.</h1><p>The address may have changed, or the page may no longer be available. You can return to the portfolio or get in touch.</p><div><a class="btn btn-accent" href="{% url 'home' %}">Return Home</a><a class="btn btn-outline" href="{% url 'contact' %}">Contact</a></div></div></section>{% endblock %}

@@ -1,0 +1,20 @@
+<header class="site-header">
+  <nav class="navbar navbar-expand-xl" aria-label="Primary navigation">
+    <div class="container-fluid shell">
+      <a class="navbar-brand" href="{% url 'home' %}">
+        <span class="brand-mark" aria-hidden="true">SW</span>
+        <span><strong>{{ site_profile.full_name|default:"Professional Portfolio" }}</strong><small>{{ site_profile.credentials|default:"Social Work • Research • Impact" }}</small></span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNav" aria-controls="mobileNav" aria-label="Open navigation"><i class="bi bi-list"></i></button>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto align-items-center">
+          {% include "app/partials/nav_links.html" %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileNav" aria-labelledby="mobileNavLabel">
+    <div class="offcanvas-header"><h2 id="mobileNavLabel">Navigate</h2><button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close navigation"></button></div>
+    <div class="offcanvas-body"><ul class="navbar-nav">{% include "app/partials/nav_links.html" %}</ul></div>
+  </div>
+</header>

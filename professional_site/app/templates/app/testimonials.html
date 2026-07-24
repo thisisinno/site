@@ -1,0 +1,3 @@
+{% extends "app/base.html" %}{% block title %}Testimonials | {{ site_profile.website_name }}{% endblock %}
+{% block content %}{% include "app/partials/page_header.html" with eyebrow="Testimonials" title="Professional perspectives from collaborators" description="Published only with appropriate context and permission." %}
+<section class="section"><div class="shell"><div class="card-grid">{% for testimonial in testimonials %}{% include "app/partials/testimonial_card.html" %}{% empty %}<div class="empty-state"><i class="bi bi-chat-quote"></i><h2>No testimonials are published yet</h2><p>Approved professional reflections will appear here.</p></div>{% endfor %}</div></div></section>{% endblock %}

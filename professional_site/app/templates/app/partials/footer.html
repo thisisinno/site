@@ -1,0 +1,8 @@
+<footer class="site-footer">
+  <div class="shell footer-grid">
+    <div><a class="footer-brand" href="{% url 'home' %}">{{ site_profile.full_name|default:site_profile.website_name|default:"Professional Portfolio" }}</a><p>{{ site_profile.footer_statement }}</p></div>
+    <div><h2>Explore</h2><a href="{% url 'about' %}">About Me</a><a href="{% url 'cv' %}">Curriculum Vitae</a><a href="{% url 'publications' %}">Research &amp; Publications</a><a href="{% url 'projects' %}">Projects</a></div>
+    <div><h2>Connect</h2>{% if site_profile.email %}<a href="mailto:{{ site_profile.email }}">{{ site_profile.email }}</a>{% endif %}{% if site_profile.location %}<span>{{ site_profile.location }}</span>{% endif %}<div class="social-row">{% for link in site_social_links %}<a href="{{ link.url }}" target="_blank" rel="noopener" aria-label="{{ link.label }}"><i class="{{ link.icon_class|default:'bi bi-link-45deg' }}"></i></a>{% endfor %}</div></div>
+  </div>
+  <div class="shell footer-bottom"><span>&copy; {% now "Y" %} {{ site_profile.copyright_name|default:site_profile.full_name|default:"Professional Portfolio" }}. All rights reserved.</span><span>Template foundation by <a href="https://htmlcodex.com" target="_blank" rel="noopener">HTML Codex</a></span></div>
+</footer>
