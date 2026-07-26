@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Franklin:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link href="{% static 'app/css/bootstrap.min.css' %}" rel="stylesheet">
-  <link href="{% static 'app/css/style.css' %}" rel="stylesheet">
+  <link href="{% static 'app/css/style.css' %}?v=mobile-nav-20260726-1" rel="stylesheet">
   {% block structured_data %}
   {% if site_profile %}<script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"{{ site_profile.full_name|escapejs }}","jobTitle":"{{ site_profile.professional_title|escapejs }}","email":"{{ site_profile.email|escapejs }}","url":"{{ request.scheme }}://{{ request.get_host }}{% url 'home' %}"}</script>{% endif %}
   {% endblock %}
@@ -39,6 +39,6 @@
   {% include "app/partials/content_modal.html" %}
   <button class="back-top" type="button" aria-label="Back to top"><i class="bi bi-arrow-up"></i></button>
   <script src="{% static 'app/js/bootstrap.bundle.min.js' %}"></script>
-  <script src="{% static 'app/js/main.js' %}"></script>
+  <script src="{% static 'app/js/main.js' %}?v=mobile-nav-20260726-1"></script>
 </body>
 </html>

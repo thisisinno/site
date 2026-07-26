@@ -8,7 +8,7 @@
           <small>{{ site_profile.credentials|default:"Social Work • Research • Impact" }}</small>
         </span>
       </a>
-      <button class="navbar-toggler menu-trigger" type="button"
+      <button id="mobileNavTrigger" class="navbar-toggler menu-trigger" type="button"
               aria-controls="mobileNav" aria-expanded="false"
               aria-label="Open navigation">
         <span></span><span></span><span></span>
@@ -21,9 +21,10 @@
     </div>
   </nav>
 </header>
-<div class="offcanvas offcanvas-end mobile-nav" tabindex="-1" id="mobileNav"
-       aria-labelledby="mobileNavLabel">
-    <div class="offcanvas-header">
+<div id="mobileNavBackdrop" class="mobile-nav-backdrop" aria-hidden="true"></div>
+<aside class="mobile-nav" id="mobileNav" role="dialog" aria-modal="true"
+       aria-labelledby="mobileNavLabel" aria-hidden="true">
+    <div class="mobile-nav-header">
       <div class="mobile-identity">
         {% if site_profile.profile_photo %}
           <img src="{{ site_profile.profile_photo.url }}" alt="">
@@ -35,11 +36,11 @@
           <p>{{ site_profile.professional_title }}</p>
         </div>
       </div>
-      <button type="button" class="modal-close" data-bs-dismiss="offcanvas" aria-label="Close navigation">
+      <button type="button" class="modal-close mobile-nav-close" aria-label="Close navigation">
         <i class="bi bi-x-lg"></i>
       </button>
     </div>
-    <div class="offcanvas-body">
+    <div class="mobile-nav-body">
       {% with current=request.resolver_match.url_name %}
       <nav aria-label="Mobile navigation">
         <div class="mobile-nav-group">
@@ -66,4 +67,4 @@
       </a>
       {% endwith %}
     </div>
-  </div>
+  </aside>

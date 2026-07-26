@@ -14,6 +14,89 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.persisted) revealPage();
   });
 
+  const menu = document.getElementById("mobileNav");
+  const trigger = document.getElementById("mobileNavTrigger") || document.querySelector(".menu-trigger");
+  const backdrop = document.getElementById("mobileNavBackdrop");
+  const closeButton = menu?.querySelector(".mobile-nav-close");
+  const desktopMedia = window.matchMedia("(min-width: 1400px)");
+  let lastFocusedElement = null;
+
+  const getMobileNavFocusable = () => menu
+    ? [...menu.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+        .filter(element => element.getClientRects().length > 0)
+    : [];
+
+  const setMobileNavState = open => {
+    if (!menu || !trigger || !backdrop) return;
+    menu.classList.toggle("is-open", open);
+    backdrop.classList.toggle("is-open", open);
+    document.body.classList.toggle("mobile-nav-open", open);
+    trigger.classList.toggle("is-open", open);
+    trigger.setAttribute("aria-expanded", String(open));
+    trigger.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+    menu.setAttribute("aria-hidden", String(!open));
+  };
+
+  const openMobileNav = () => {
+    if (!menu || !trigger || !backdrop) return;
+    lastFocusedElement = document.activeElement;
+    setMobileNavState(true);
+    requestAnimationFrame(() => {
+      getMobileNavFocusable()[0]?.focus({ preventScroll: true });
+    });
+  };
+
+  const closeMobileNav = ({ restoreFocus = true } = {}) => {
+    if (!menu || !trigger || !backdrop) return;
+    const wasOpen = menu.classList.contains("is-open");
+    setMobileNavState(false);
+    if (restoreFocus && wasOpen) {
+      window.setTimeout(() => trigger.focus({ preventScroll: true }), 20);
+    }
+    lastFocusedElement = null;
+  };
+
+  trigger?.addEventListener("click", event => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (menu?.classList.contains("is-open")) closeMobileNav();
+    else openMobileNav();
+  });
+  closeButton?.addEventListener("click", event => {
+    event.preventDefault();
+    closeMobileNav();
+  });
+  backdrop?.addEventListener("click", () => closeMobileNav());
+  document.addEventListener("keydown", event => {
+    if (!menu?.classList.contains("is-open")) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeMobileNav();
+      return;
+    }
+    if (event.key !== "Tab") return;
+    const focusable = getMobileNavFocusable();
+    if (!focusable.length) {
+      event.preventDefault();
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+  const handleDesktopChange = event => {
+    if (event.matches) closeMobileNav({ restoreFocus: false });
+  };
+  if (desktopMedia.addEventListener) desktopMedia.addEventListener("change", handleDesktopChange);
+  else desktopMedia.addListener(handleDesktopChange);
+  window.addEventListener("pageshow", () => closeMobileNav({ restoreFocus: false }));
+
   document.addEventListener("click", event => {
     const link = event.target.closest("a");
     if (!link || event.defaultPrevented || event.button > 0 || event.metaKey || event.ctrlKey ||
@@ -23,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const url = new URL(link.href, location.href);
     if (url.origin !== location.origin || (url.pathname === location.pathname && url.hash)) return;
     event.preventDefault();
-    if (menu?.contains(link)) setMenuState(false);
+    if (menu?.contains(link)) closeMobileNav({ restoreFocus: false });
     loader?.classList.remove("is-hidden");
     loader?.classList.add("is-navigating");
     window.setTimeout(() => { location.href = link.href; }, reducedMotion ? 0 : 180);
@@ -46,38 +129,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }, { passive: true });
   updateScrollUI();
   backTop?.addEventListener("click", () => window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" }));
-
-  const menu = document.getElementById("mobileNav");
-  const trigger = document.querySelector(".menu-trigger");
-  let offcanvas = null;
-  const setMenuState = open => {
-    trigger?.classList.toggle("is-open", open);
-    trigger?.setAttribute("aria-expanded", String(open));
-    if (trigger) trigger.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
-  };
-  if (menu && trigger && window.bootstrap?.Offcanvas) {
-    offcanvas = window.bootstrap.Offcanvas.getOrCreateInstance(menu);
-    trigger.addEventListener("click", event => {
-      event.preventDefault();
-      if (menu.classList.contains("show") || menu.classList.contains("showing")) {
-        offcanvas.hide();
-      } else {
-        offcanvas.show();
-      }
-    });
-  } else if (menu && !window.bootstrap?.Offcanvas) {
-    console.error("Mobile navigation cannot initialize: Bootstrap Offcanvas is unavailable.");
-  }
-  menu?.addEventListener("show.bs.offcanvas", () => setMenuState(true));
-  menu?.addEventListener("shown.bs.offcanvas", () => setMenuState(true));
-  menu?.addEventListener("hide.bs.offcanvas", () => setMenuState(false));
-  menu?.addEventListener("hidden.bs.offcanvas", () => setMenuState(false));
-  window.addEventListener("pageshow", event => {
-    setMenuState(false);
-    if (event.persisted && menu?.classList.contains("show")) {
-      offcanvas?.hide();
-    }
-  });
 
   document.querySelectorAll(".two-column, .bio-grid, .contact-grid").forEach(layout => {
     const children = [...layout.children];
