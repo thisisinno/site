@@ -4,7 +4,7 @@
 <head>
   <script>document.documentElement.classList.add("js");</script>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>{% block title %}{{ site_profile.seo_title|default:"Jesca Social Work" }}{% endblock %}</title>
   <meta name="description" content="{% block meta_description %}{{ site_profile.seo_description|default:site_profile.footer_statement }}{% endblock %}">
   <link rel="canonical" href="{{ request.build_absolute_uri }}">

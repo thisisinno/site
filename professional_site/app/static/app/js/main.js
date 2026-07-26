@@ -10,7 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   window.addEventListener("load", () => window.setTimeout(revealPage, reducedMotion ? 0 : 350), { once: true });
   window.setTimeout(revealPage, 2800);
-  window.addEventListener("pageshow", revealPage);
+  window.addEventListener("pageshow", event => {
+    if (event.persisted) revealPage();
+  });
 
   document.addEventListener("click", event => {
     const link = event.target.closest("a");
@@ -21,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const url = new URL(link.href, location.href);
     if (url.origin !== location.origin || (url.pathname === location.pathname && url.hash)) return;
     event.preventDefault();
+    if (menu?.contains(link)) setMenuState(false);
     loader?.classList.remove("is-hidden");
     loader?.classList.add("is-navigating");
     window.setTimeout(() => { location.href = link.href; }, reducedMotion ? 0 : 180);
@@ -55,12 +58,9 @@ document.addEventListener("DOMContentLoaded", () => {
   menu?.addEventListener("shown.bs.offcanvas", () => setMenuState(true));
   menu?.addEventListener("hide.bs.offcanvas", () => setMenuState(false));
   menu?.addEventListener("hidden.bs.offcanvas", () => setMenuState(false));
-  menu?.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
-    window.bootstrap?.Offcanvas.getInstance(menu)?.hide();
-  }));
-  window.addEventListener("pageshow", () => {
+  window.addEventListener("pageshow", event => {
     setMenuState(false);
-    if (menu?.classList.contains("show")) {
+    if (event.persisted && menu?.classList.contains("show")) {
       window.bootstrap?.Offcanvas.getOrCreateInstance(menu).hide();
     }
   });
