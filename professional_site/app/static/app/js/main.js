@@ -49,11 +49,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const menu = document.getElementById("mobileNav");
   const trigger = document.querySelector(".menu-trigger");
+  let offcanvas = null;
   const setMenuState = open => {
     trigger?.classList.toggle("is-open", open);
     trigger?.setAttribute("aria-expanded", String(open));
     if (trigger) trigger.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
   };
+  if (menu && trigger && window.bootstrap?.Offcanvas) {
+    offcanvas = window.bootstrap.Offcanvas.getOrCreateInstance(menu);
+    trigger.addEventListener("click", event => {
+      event.preventDefault();
+      if (menu.classList.contains("show") || menu.classList.contains("showing")) {
+        offcanvas.hide();
+      } else {
+        offcanvas.show();
+      }
+    });
+  } else if (menu && !window.bootstrap?.Offcanvas) {
+    console.error("Mobile navigation cannot initialize: Bootstrap Offcanvas is unavailable.");
+  }
   menu?.addEventListener("show.bs.offcanvas", () => setMenuState(true));
   menu?.addEventListener("shown.bs.offcanvas", () => setMenuState(true));
   menu?.addEventListener("hide.bs.offcanvas", () => setMenuState(false));
@@ -61,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("pageshow", event => {
     setMenuState(false);
     if (event.persisted && menu?.classList.contains("show")) {
-      window.bootstrap?.Offcanvas.getOrCreateInstance(menu).hide();
+      offcanvas?.hide();
     }
   });
 
