@@ -2,11 +2,11 @@
 <li><a class="nav-link {% if current == 'home' %}active{% endif %}" href="{% url 'home' %}" {% if current == 'home' %}aria-current="page"{% endif %}>Home</a></li>
 <li><a class="nav-link {% if current == 'about' %}active{% endif %}" href="{% url 'about' %}" {% if current == 'about' %}aria-current="page"{% endif %}>About Me</a></li>
 <li><a class="nav-link {% if current == 'cv' %}active{% endif %}" href="{% url 'cv' %}" {% if current == 'cv' %}aria-current="page"{% endif %}>Curriculum Vitae</a></li>
-<li><a class="nav-link {% if current == 'articles' or current == 'article_detail' %}active{% endif %}" href="{% url 'articles' %}">Articles</a></li>
-<li><a class="nav-link {% if current == 'publications' or current == 'publication_detail' %}active{% endif %}" href="{% url 'publications' %}">Research &amp; Publications</a></li>
-<li><a class="nav-link {% if current == 'experience' %}active{% endif %}" href="{% url 'experience' %}">Experience</a></li>
-<li><a class="nav-link {% if current == 'projects' or current == 'project_detail' %}active{% endif %}" href="{% url 'projects' %}">Projects</a></li>
-<li><a class="nav-link {% if current == 'gallery' %}active{% endif %}" href="{% url 'gallery' %}">Gallery</a></li>
-<li><a class="nav-link {% if current == 'testimonials' %}active{% endif %}" href="{% url 'testimonials' %}">Testimonials</a></li>
-<li><a class="btn btn-accent nav-contact {% if current == 'contact' %}active{% endif %}" href="{% url 'contact' %}">Contact</a></li>
+<li><a class="nav-link {% if current == 'articles' or current == 'article_detail' %}active{% endif %}" href="{% url 'articles' %}" {% if current == 'articles' or current == 'article_detail' %}aria-current="page"{% endif %}>Articles</a></li>
+<li><a class="nav-link {% if current == 'publications' or current == 'publication_detail' %}active{% endif %}" href="{% url 'publications' %}" {% if current == 'publications' or current == 'publication_detail' %}aria-current="page"{% endif %}>Research &amp; Publications</a></li>
+<li><a class="nav-link {% if current == 'experience' %}active{% endif %}" href="{% url 'experience' %}" {% if current == 'experience' %}aria-current="page"{% endif %}>Experience</a></li>
+<li><a class="nav-link {% if current == 'projects' or current == 'project_detail' %}active{% endif %}" href="{% url 'projects' %}" {% if current == 'projects' or current == 'project_detail' %}aria-current="page"{% endif %}>Projects</a></li>
+<li><a class="nav-link {% if current == 'gallery' %}active{% endif %}" href="{% url 'gallery' %}" {% if current == 'gallery' %}aria-current="page"{% endif %}>Gallery</a></li>
+<li><a class="nav-link {% if current == 'testimonials' %}active{% endif %}" href="{% url 'testimonials' %}" {% if current == 'testimonials' %}aria-current="page"{% endif %}>Testimonials</a></li>
+<li><a class="btn btn-accent nav-contact {% if current == 'contact' %}active{% endif %}" href="{% url 'contact' %}" {% if current == 'contact' %}aria-current="page"{% endif %}>Contact</a></li>
 {% endwith %}

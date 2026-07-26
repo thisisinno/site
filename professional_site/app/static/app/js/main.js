@@ -46,11 +46,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const menu = document.getElementById("mobileNav");
   const trigger = document.querySelector(".menu-trigger");
-  menu?.addEventListener("show.bs.offcanvas", () => trigger?.classList.add("is-open"));
-  menu?.addEventListener("hidden.bs.offcanvas", () => trigger?.classList.remove("is-open"));
+  const setMenuState = open => {
+    trigger?.classList.toggle("is-open", open);
+    trigger?.setAttribute("aria-expanded", String(open));
+    if (trigger) trigger.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+  };
+  menu?.addEventListener("show.bs.offcanvas", () => setMenuState(true));
+  menu?.addEventListener("shown.bs.offcanvas", () => setMenuState(true));
+  menu?.addEventListener("hide.bs.offcanvas", () => setMenuState(false));
+  menu?.addEventListener("hidden.bs.offcanvas", () => setMenuState(false));
   menu?.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
-    bootstrap.Offcanvas.getInstance(menu)?.hide();
+    window.bootstrap?.Offcanvas.getInstance(menu)?.hide();
   }));
+  window.addEventListener("pageshow", () => {
+    setMenuState(false);
+    if (menu?.classList.contains("show")) {
+      window.bootstrap?.Offcanvas.getOrCreateInstance(menu).hide();
+    }
+  });
 
   document.querySelectorAll(".two-column, .bio-grid, .contact-grid").forEach(layout => {
     const children = [...layout.children];

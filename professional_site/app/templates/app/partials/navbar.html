@@ -49,18 +49,18 @@
         </div>
         <div class="mobile-nav-group">
           <h3>Knowledge &amp; Work</h3>
-          <a class="{% if current == 'articles' or current == 'article_detail' %}active{% endif %}" href="{% url 'articles' %}"><i class="bi bi-journal-text"></i><span>Articles</span><i class="bi bi-arrow-right"></i></a>
-          <a class="{% if current == 'publications' or current == 'publication_detail' %}active{% endif %}" href="{% url 'publications' %}"><i class="bi bi-journals"></i><span>Research &amp; Publications</span><i class="bi bi-arrow-right"></i></a>
-          <a class="{% if current == 'experience' %}active{% endif %}" href="{% url 'experience' %}"><i class="bi bi-briefcase"></i><span>Professional Experience</span><i class="bi bi-arrow-right"></i></a>
-          <a class="{% if current == 'projects' or current == 'project_detail' %}active{% endif %}" href="{% url 'projects' %}"><i class="bi bi-kanban"></i><span>Projects</span><i class="bi bi-arrow-right"></i></a>
+          <a class="{% if current == 'articles' or current == 'article_detail' %}active{% endif %}" href="{% url 'articles' %}" {% if current == 'articles' or current == 'article_detail' %}aria-current="page"{% endif %}><i class="bi bi-journal-text"></i><span>Articles</span><i class="bi bi-arrow-right"></i></a>
+          <a class="{% if current == 'publications' or current == 'publication_detail' %}active{% endif %}" href="{% url 'publications' %}" {% if current == 'publications' or current == 'publication_detail' %}aria-current="page"{% endif %}><i class="bi bi-journals"></i><span>Research &amp; Publications</span><i class="bi bi-arrow-right"></i></a>
+          <a class="{% if current == 'experience' %}active{% endif %}" href="{% url 'experience' %}" {% if current == 'experience' %}aria-current="page"{% endif %}><i class="bi bi-briefcase"></i><span>Professional Experience</span><i class="bi bi-arrow-right"></i></a>
+          <a class="{% if current == 'projects' or current == 'project_detail' %}active{% endif %}" href="{% url 'projects' %}" {% if current == 'projects' or current == 'project_detail' %}aria-current="page"{% endif %}><i class="bi bi-kanban"></i><span>Projects</span><i class="bi bi-arrow-right"></i></a>
         </div>
         <div class="mobile-nav-group">
           <h3>Connect</h3>
-          <a class="{% if current == 'gallery' %}active{% endif %}" href="{% url 'gallery' %}"><i class="bi bi-images"></i><span>Gallery</span><i class="bi bi-arrow-right"></i></a>
-          <a class="{% if current == 'testimonials' %}active{% endif %}" href="{% url 'testimonials' %}"><i class="bi bi-chat-quote"></i><span>Testimonials</span><i class="bi bi-arrow-right"></i></a>
+          <a class="{% if current == 'gallery' %}active{% endif %}" href="{% url 'gallery' %}" {% if current == 'gallery' %}aria-current="page"{% endif %}><i class="bi bi-images"></i><span>Gallery</span><i class="bi bi-arrow-right"></i></a>
+          <a class="{% if current == 'testimonials' %}active{% endif %}" href="{% url 'testimonials' %}" {% if current == 'testimonials' %}aria-current="page"{% endif %}><i class="bi bi-chat-quote"></i><span>Testimonials</span><i class="bi bi-arrow-right"></i></a>
         </div>
       </nav>
-      <a class="btn btn-accent mobile-contact" href="{% url 'contact' %}">
+      <a class="btn btn-accent mobile-contact {% if current == 'contact' %}active{% endif %}" href="{% url 'contact' %}" {% if current == 'contact' %}aria-current="page"{% endif %}>
         Let’s Connect <i class="bi bi-envelope"></i>
       </a>
       {% endwith %}
