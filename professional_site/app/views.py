@@ -1,8 +1,5 @@
-from datetime import timedelta
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Q
-from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
@@ -60,6 +57,10 @@ def article_detail(request, slug):
     related = Article.objects.filter(is_published=True, category=article.category).exclude(pk=article.pk)[:3]
     return render(request, "app/articles/detail.html", {"article": article, "related_articles": related})
 
+def article_preview(request, slug):
+    article = get_object_or_404(Article, slug=slug, is_published=True)
+    return render(request, "app/articles/_preview.html", {"article": article})
+
 
 def publications(request):
     qs = Publication.objects.filter(is_published=True)
@@ -71,6 +72,19 @@ def publications(request):
         "types": Publication.TYPES, "years": Publication.objects.filter(is_published=True).values_list("publication_year", flat=True).distinct().order_by("-publication_year"),
         "selected_type": publication_type, "selected_year": year,
     })
+
+def publication_detail(request, slug):
+    publication = get_object_or_404(Publication, slug=slug, is_published=True)
+    related = Publication.objects.filter(
+        is_published=True, publication_type=publication.publication_type
+    ).exclude(pk=publication.pk)[:3]
+    return render(request, "app/publications/detail.html", {
+        "publication": publication, "related_publications": related,
+    })
+
+def publication_preview(request, slug):
+    publication = get_object_or_404(Publication, slug=slug, is_published=True)
+    return render(request, "app/publications/_preview.html", {"publication": publication})
 
 
 def experience(request): return render(request, "app/experience.html", {"experience": ProfessionalExperience.objects.filter(is_active=True)})

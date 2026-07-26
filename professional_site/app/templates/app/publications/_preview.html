@@ -1,0 +1,21 @@
+<article class="preview-publication">
+  <div class="meta"><span>{{ publication.publication_type }}</span><span>{{ publication.publication_year }}</span></div>
+  <h2 id="contentDetailModalLabel" tabindex="-1">{{ publication.title }}</h2>
+  <p class="authors">{{ publication.authors }}</p>
+  {% if publication.cover_image %}<img class="preview-cover publication-cover" src="{{ publication.cover_image.url }}" alt="Cover for {{ publication.title }}">{% endif %}
+  {% if publication.abstract %}<section class="preview-prose"><h3>Abstract</h3>{{ publication.abstract|linebreaks }}</section>{% endif %}
+  {% if publication.citation %}<section class="citation-block"><h3>Citation</h3><p>{{ publication.citation }}</p></section>{% endif %}
+  <dl class="publication-facts">
+    {% if publication.journal_or_publisher %}<div><dt>Journal / Publisher</dt><dd>{{ publication.journal_or_publisher }}</dd></div>{% endif %}
+    {% if publication.volume %}<div><dt>Volume</dt><dd>{{ publication.volume }}</dd></div>{% endif %}
+    {% if publication.issue %}<div><dt>Issue</dt><dd>{{ publication.issue }}</dd></div>{% endif %}
+    {% if publication.pages %}<div><dt>Pages</dt><dd>{{ publication.pages }}</dd></div>{% endif %}
+  </dl>
+  <div class="preview-actions">
+    <button class="btn btn-outline js-share" type="button" data-share-url="{{ request.scheme }}://{{ request.get_host }}{{ publication.get_absolute_url }}" data-share-title="{{ publication.title }}"><i class="bi bi-link-45deg"></i><span>Copy link</span></button>
+    {% if publication.external_url %}<a class="btn btn-outline" href="{{ publication.external_url }}" target="_blank" rel="noopener">View publication</a>{% endif %}
+    {% if publication.doi %}<a class="btn btn-outline" href="https://doi.org/{{ publication.doi }}" target="_blank" rel="noopener">DOI</a>{% endif %}
+    {% if publication.document %}<a class="btn btn-outline" href="{{ publication.document.url }}" download>Download PDF</a>{% endif %}
+    <a class="btn btn-accent" href="{{ publication.get_absolute_url }}">Open full publication <i class="bi bi-arrow-right"></i></a>
+  </div>
+</article>

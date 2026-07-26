@@ -1,11 +1,18 @@
 <header class="site-header">
-  <nav class="navbar navbar-expand-xl" aria-label="Primary navigation">
+  <nav class="navbar navbar-expand-xxl" aria-label="Primary navigation">
     <div class="container-fluid shell">
       <a class="navbar-brand" href="{% url 'home' %}">
-        <span class="brand-mark" aria-hidden="true">SW</span>
-        <span><strong>{{ site_profile.full_name|default:"Professional Portfolio" }}</strong><small>{{ site_profile.credentials|default:"Social Work • Research • Impact" }}</small></span>
+        <span class="brand-mark" aria-hidden="true">JS</span>
+        <span class="brand-copy">
+          <strong>Jesca Social Work</strong>
+          <small>{{ site_profile.credentials|default:"Social Work • Research • Impact" }}</small>
+        </span>
       </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNav" aria-controls="mobileNav" aria-label="Open navigation"><i class="bi bi-list"></i></button>
+      <button class="navbar-toggler menu-trigger" type="button" data-bs-toggle="offcanvas"
+              data-bs-target="#mobileNav" aria-controls="mobileNav" aria-expanded="false"
+              aria-label="Open navigation">
+        <span></span><span></span><span></span>
+      </button>
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav ms-auto align-items-center">
           {% include "app/partials/nav_links.html" %}
@@ -13,8 +20,50 @@
       </div>
     </div>
   </nav>
-  <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileNav" aria-labelledby="mobileNavLabel">
-    <div class="offcanvas-header"><h2 id="mobileNavLabel">Navigate</h2><button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close navigation"></button></div>
-    <div class="offcanvas-body"><ul class="navbar-nav">{% include "app/partials/nav_links.html" %}</ul></div>
+  <div class="offcanvas offcanvas-end mobile-nav" tabindex="-1" id="mobileNav"
+       aria-labelledby="mobileNavLabel">
+    <div class="offcanvas-header">
+      <div class="mobile-identity">
+        {% if site_profile.profile_photo %}
+          <img src="{{ site_profile.profile_photo.url }}" alt="">
+        {% else %}
+          <span class="brand-mark" aria-hidden="true">JS</span>
+        {% endif %}
+        <div>
+          <h2 id="mobileNavLabel">Jesca Social Work</h2>
+          <p>{{ site_profile.professional_title }}</p>
+        </div>
+      </div>
+      <button type="button" class="modal-close" data-bs-dismiss="offcanvas" aria-label="Close navigation">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="offcanvas-body">
+      {% with current=request.resolver_match.url_name %}
+      <nav aria-label="Mobile navigation">
+        <div class="mobile-nav-group">
+          <h3>Profile</h3>
+          <a class="{% if current == 'home' %}active{% endif %}" href="{% url 'home' %}" {% if current == 'home' %}aria-current="page"{% endif %}><i class="bi bi-house"></i><span>Home</span><i class="bi bi-arrow-right"></i></a>
+          <a class="{% if current == 'about' %}active{% endif %}" href="{% url 'about' %}" {% if current == 'about' %}aria-current="page"{% endif %}><i class="bi bi-person"></i><span>About Me</span><i class="bi bi-arrow-right"></i></a>
+          <a class="{% if current == 'cv' %}active{% endif %}" href="{% url 'cv' %}" {% if current == 'cv' %}aria-current="page"{% endif %}><i class="bi bi-file-earmark-person"></i><span>Curriculum Vitae</span><i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="mobile-nav-group">
+          <h3>Knowledge &amp; Work</h3>
+          <a class="{% if current == 'articles' or current == 'article_detail' %}active{% endif %}" href="{% url 'articles' %}"><i class="bi bi-journal-text"></i><span>Articles</span><i class="bi bi-arrow-right"></i></a>
+          <a class="{% if current == 'publications' or current == 'publication_detail' %}active{% endif %}" href="{% url 'publications' %}"><i class="bi bi-journals"></i><span>Research &amp; Publications</span><i class="bi bi-arrow-right"></i></a>
+          <a class="{% if current == 'experience' %}active{% endif %}" href="{% url 'experience' %}"><i class="bi bi-briefcase"></i><span>Professional Experience</span><i class="bi bi-arrow-right"></i></a>
+          <a class="{% if current == 'projects' or current == 'project_detail' %}active{% endif %}" href="{% url 'projects' %}"><i class="bi bi-kanban"></i><span>Projects</span><i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="mobile-nav-group">
+          <h3>Connect</h3>
+          <a class="{% if current == 'gallery' %}active{% endif %}" href="{% url 'gallery' %}"><i class="bi bi-images"></i><span>Gallery</span><i class="bi bi-arrow-right"></i></a>
+          <a class="{% if current == 'testimonials' %}active{% endif %}" href="{% url 'testimonials' %}"><i class="bi bi-chat-quote"></i><span>Testimonials</span><i class="bi bi-arrow-right"></i></a>
+        </div>
+      </nav>
+      <a class="btn btn-accent mobile-contact" href="{% url 'contact' %}">
+        Let’s Connect <i class="bi bi-envelope"></i>
+      </a>
+      {% endwith %}
+    </div>
   </div>
 </header>

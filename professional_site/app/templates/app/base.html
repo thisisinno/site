@@ -2,12 +2,13 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <script>document.documentElement.classList.add("js");</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}{{ site_profile.seo_title|default:site_profile.website_name|default:"Professional Portfolio" }}{% endblock %}</title>
+  <title>{% block title %}{{ site_profile.seo_title|default:"Jesca Social Work" }}{% endblock %}</title>
   <meta name="description" content="{% block meta_description %}{{ site_profile.seo_description|default:site_profile.footer_statement }}{% endblock %}">
   <link rel="canonical" href="{{ request.build_absolute_uri }}">
-  <meta property="og:title" content="{% block og_title %}{{ site_profile.website_name|default:"Professional Portfolio" }}{% endblock %}">
+  <meta property="og:title" content="{% block og_title %}Jesca Social Work{% endblock %}">
   <meta property="og:description" content="{% block og_description %}{{ site_profile.footer_statement }}{% endblock %}">
   <meta property="og:url" content="{{ request.build_absolute_uri }}">
   {% block og_image %}{% if site_profile.profile_photo %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ site_profile.profile_photo.url }}">{% endif %}{% endblock %}
@@ -21,12 +22,21 @@
   {% if site_profile %}<script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"{{ site_profile.full_name|escapejs }}","jobTitle":"{{ site_profile.professional_title|escapejs }}","email":"{{ site_profile.email|escapejs }}","url":"{{ request.scheme }}://{{ request.get_host }}{% url 'home' %}"}</script>{% endif %}
   {% endblock %}
 </head>
-<body>
+<body class="{% if request.resolver_match.url_name == 'home' %}is-home{% endif %}">
   <a class="skip-link" href="#main-content">Skip to content</a>
+  <div id="siteLoader" class="site-loader" role="status" aria-live="polite" aria-label="Loading page">
+    <div class="loader-inner">
+      <div class="loader-mark"><span>JSW</span><i aria-hidden="true"></i></div>
+      <p>Jesca Social Work</p>
+      <small>Social Work • Research • Community Impact</small>
+    </div>
+  </div>
+  <div class="scroll-progress" aria-hidden="true"><span></span></div>
   {% include "app/partials/navbar.html" %}
   {% if messages %}<div class="container messages" aria-live="polite">{% for message in messages %}<div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>{% endfor %}</div>{% endif %}
   <main id="main-content">{% block content %}{% endblock %}</main>
   {% include "app/partials/footer.html" %}
+  {% include "app/partials/content_modal.html" %}
   <button class="back-top" type="button" aria-label="Back to top"><i class="bi bi-arrow-up"></i></button>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="{% static 'app/js/main.js' %}"></script>

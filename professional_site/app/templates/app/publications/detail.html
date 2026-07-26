@@ -1,0 +1,37 @@
+{% extends "app/base.html" %}
+{% block title %}{{ publication.title }} | {{ site_profile.website_name }}{% endblock %}
+{% block meta_description %}{{ publication.abstract|truncatewords:35 }}{% endblock %}
+{% block content %}
+<article class="publication-detail">
+  <header class="article-header shell narrow" data-reveal="fade-up">
+    <a class="back-link" href="{% url 'publications' %}"><i class="bi bi-arrow-left"></i> Back to Research &amp; Publications</a>
+    <div class="meta"><span>{{ publication.publication_type }}</span><span>{{ publication.publication_year }}</span></div>
+    <h1>{{ publication.title }}</h1>
+    <p class="authors">{{ publication.authors }}</p>
+    <button class="btn btn-outline js-share" type="button" data-share-url="{{ request.build_absolute_uri }}" data-share-title="{{ publication.title }}"><i class="bi bi-link-45deg"></i><span>Copy link</span></button>
+  </header>
+  <div class="shell publication-detail-grid section">
+    <main class="prose">
+      {% if publication.abstract %}<h2>Abstract</h2>{{ publication.abstract|linebreaks }}{% endif %}
+      {% if publication.citation %}<div class="citation-block"><h2>Citation</h2><p>{{ publication.citation }}</p></div>{% endif %}
+    </main>
+    <aside>
+      <h2>Publication information</h2>
+      <dl class="publication-facts">
+        {% if publication.journal_or_publisher %}<div><dt>Journal / Publisher</dt><dd>{{ publication.journal_or_publisher }}</dd></div>{% endif %}
+        {% if publication.volume %}<div><dt>Volume</dt><dd>{{ publication.volume }}</dd></div>{% endif %}
+        {% if publication.issue %}<div><dt>Issue</dt><dd>{{ publication.issue }}</dd></div>{% endif %}
+        {% if publication.pages %}<div><dt>Pages</dt><dd>{{ publication.pages }}</dd></div>{% endif %}
+      </dl>
+      <div class="detail-actions">
+        {% if publication.document %}<a class="btn btn-accent" href="{{ publication.document.url }}" download>Download PDF <i class="bi bi-download"></i></a>{% endif %}
+        {% if publication.external_url %}<a class="btn btn-outline" href="{{ publication.external_url }}" target="_blank" rel="noopener">View publication</a>{% endif %}
+        {% if publication.doi %}<a class="btn btn-outline" href="https://doi.org/{{ publication.doi }}" target="_blank" rel="noopener">View DOI</a>{% endif %}
+      </div>
+    </aside>
+  </div>
+</article>
+{% if related_publications %}
+<section class="section surface"><div class="shell"><h2>Related publications</h2><div class="publication-list">{% for publication in related_publications %}{% include "app/partials/publication_card.html" %}{% endfor %}</div></div></section>
+{% endif %}
+{% endblock %}

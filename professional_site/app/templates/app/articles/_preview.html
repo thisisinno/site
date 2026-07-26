@@ -1,0 +1,11 @@
+<article class="preview-article">
+  <div class="meta"><span>{{ article.category }}</span><time datetime="{{ article.published_at|date:'c' }}">{{ article.published_at|date:"F j, Y" }}</time><span>{{ article.reading_time }} min read</span></div>
+  <h2 id="contentDetailModalLabel" tabindex="-1">{{ article.title }}</h2>
+  <p class="authors">By {{ article.author_name|default:site_profile.full_name|default:"Portfolio author" }}</p>
+  {% if article.cover_image %}<img class="preview-cover" src="{{ article.cover_image.url }}" alt="{{ article.cover_image_alt|default:article.title }}">{% endif %}
+  <div class="prose preview-prose">{{ article.body|linebreaks }}</div>
+  <div class="preview-actions">
+    <button class="btn btn-outline js-share" type="button" data-share-url="{{ request.scheme }}://{{ request.get_host }}{{ article.get_absolute_url }}" data-share-title="{{ article.title }}"><i class="bi bi-link-45deg"></i><span>Copy link</span></button>
+    <a class="btn btn-accent" href="{{ article.get_absolute_url }}">Open full article <i class="bi bi-arrow-right"></i></a>
+  </div>
+</article>

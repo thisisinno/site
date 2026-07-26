@@ -1,16 +1,26 @@
+import re
+from pathlib import Path
+
 from django.contrib import admin
+from django.contrib import messages
+from django.db import transaction
+from django.db.models import Max
+from django.http import HttpResponseForbidden
+from django.shortcuts import redirect, render
+from django.urls import path, reverse
 from django.utils.html import format_html
 
+from .forms import GalleryBulkUploadForm
 from .models import *
 
-admin.site.site_header = "Professional Portfolio Administration"
-admin.site.site_title = "Portfolio Admin"
+admin.site.site_header = "Jesca Social Work Administration"
+admin.site.site_title = "Jesca Social Work Admin"
 admin.site.index_title = "Content Management"
 
 
 def thumbnail(obj, field_name):
     image = getattr(obj, field_name, None)
-    return format_html('<img src="{}" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:6px">', image.url) if image else "—"
+    return format_html('<img src="{}" alt="" style="width:68px;height:68px;object-fit:cover;border-radius:6px">', image.url) if image else "—"
 
 
 class SocialLinkInline(admin.TabularInline):
@@ -28,7 +38,11 @@ class SiteProfileAdmin(admin.ModelAdmin):
         ("Hero & Introduction", {"fields": ("welcome_eyebrow", "welcome_heading", "hero_intro", "about_short")}),
         ("Mission & Biography", {"fields": ("mission_statement", "professional_philosophy", "about_full", "populations_of_interest", "key_competencies", "professional_values")}),
         ("Contact Information", {"fields": ("email", "secondary_email", "phone", "location")}),
-        ("Files & Images", {"fields": ("profile_photo", "profile_preview", "profile_photo_alt", "secondary_photo", "cv_file")}),
+        ("Professional Portrait", {"fields": (
+            "profile_photo", "profile_preview", "profile_photo_alt",
+            "portrait_focus_x", "portrait_focus_y", "portrait_zoom",
+        )}),
+        ("Other Files & Images", {"fields": ("secondary_photo", "cv_file")}),
         ("SEO", {"fields": ("seo_title", "seo_description"), "classes": ("collapse",)}),
         ("Footer", {"fields": ("footer_statement", "copyright_name")}),
         ("Record information", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
@@ -98,17 +112,37 @@ class ArticleAdmin(PublishableAdmin):
     prepopulated_fields = {"slug": ("title",)}
     date_hierarchy = "published_at"
     readonly_fields = ("image_preview", "created_at", "updated_at")
+    fieldsets = (
+        ("Identity", {"fields": ("title", "slug", "category", "author_name")}),
+        ("Article", {"fields": ("excerpt", "body")}),
+        ("Cover", {"fields": ("cover_image", "image_preview", "cover_image_alt")}),
+        ("Publishing", {"fields": ("published_at", "is_published", "featured")}),
+        ("SEO", {"fields": ("seo_title", "seo_description"), "classes": ("collapse",)}),
+        ("Record information", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
+    )
     @admin.display(description="Cover")
     def image_preview(self, obj): return thumbnail(obj, "cover_image")
 
 
 @admin.register(Publication)
 class PublicationAdmin(PublishableAdmin):
-    list_display = ("title", "publication_type", "publication_year", "featured", "is_published", "display_order")
+    list_display = ("image_preview", "title", "publication_type", "publication_year", "featured", "is_published", "display_order")
     list_editable = ("featured", "is_published", "display_order")
     list_filter = ("publication_type", "publication_year", "featured", "is_published")
     search_fields = ("title", "authors", "journal_or_publisher", "abstract", "citation")
     prepopulated_fields = {"slug": ("title",)}
+    readonly_fields = ("image_preview", "created_at", "updated_at")
+    fieldsets = (
+        ("Identity", {"fields": ("title", "slug", "publication_type", "authors")}),
+        ("Bibliographic Information", {"fields": ("journal_or_publisher", "publication_year", "volume", "issue", "pages")}),
+        ("Abstract & Citation", {"fields": ("abstract", "citation")}),
+        ("Links & Document", {"fields": ("doi", "external_url", "document", "cover_image", "image_preview")}),
+        ("Publishing", {"fields": ("is_published", "featured")}),
+        ("Display", {"fields": ("display_order",)}),
+        ("Record Information", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
+    )
+    @admin.display(description="Cover")
+    def image_preview(self, obj): return thumbnail(obj, "cover_image")
 
 
 @admin.register(ProfessionalExperience)
@@ -141,6 +175,7 @@ class GalleryCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(GalleryItem)
 class GalleryItemAdmin(PublishableAdmin):
+    change_list_template = "admin/app/galleryitem/change_list.html"
     list_display = ("image_preview", "title", "category", "event_date", "featured", "is_published", "display_order")
     list_editable = ("featured", "is_published", "display_order")
     list_filter = ("category", "featured", "is_published")
@@ -148,6 +183,64 @@ class GalleryItemAdmin(PublishableAdmin):
     readonly_fields = ("image_preview", "created_at", "updated_at")
     @admin.display(description="Image")
     def image_preview(self, obj): return thumbnail(obj, "image")
+
+    def get_urls(self):
+        return [
+            path(
+                "bulk-upload/",
+                self.admin_site.admin_view(self.bulk_upload_view),
+                name="app_galleryitem_bulk_upload",
+            ),
+        ] + super().get_urls()
+
+    @staticmethod
+    def _title_from_filename(filename):
+        stem = Path(filename).stem
+        stem = re.sub(r"^(img|dsc|pxl)[-_]?\d+[-_]?", "", stem, flags=re.I)
+        stem = re.sub(r"[_-]+", " ", stem)
+        stem = re.sub(r"\s+", " ", stem).strip()
+        return stem.title() or "Community Moment"
+
+    def bulk_upload_view(self, request):
+        if not self.has_add_permission(request):
+            return HttpResponseForbidden("You do not have permission to add gallery images.")
+        if request.method == "POST":
+            form = GalleryBulkUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                uploads = form.cleaned_data["images"]
+                highest = GalleryItem.objects.aggregate(Max("display_order"))["display_order__max"] or 0
+                with transaction.atomic():
+                    for offset, upload in enumerate(uploads, 1):
+                        title = self._title_from_filename(upload.name)
+                        prefix = form.cleaned_data["title_prefix"].strip()
+                        if prefix:
+                            title = f"{prefix} — {title}"
+                        GalleryItem.objects.create(
+                            image=upload,
+                            title=title[:180],
+                            alt_text=title[:220],
+                            category=form.cleaned_data["category"],
+                            event_date=form.cleaned_data["event_date"],
+                            location=form.cleaned_data["location"],
+                            caption=form.cleaned_data["caption"],
+                            featured=form.cleaned_data["mark_featured"],
+                            is_published=form.cleaned_data["publish_immediately"],
+                            display_order=highest + offset,
+                        )
+                self.message_user(
+                    request,
+                    f"{len(uploads)} gallery images uploaded successfully. Review titles and alternative text for accessibility before publishing.",
+                    messages.SUCCESS,
+                )
+                return redirect(reverse("admin:app_galleryitem_changelist"))
+        else:
+            form = GalleryBulkUploadForm()
+        return render(request, "admin/app/galleryitem/bulk_upload.html", {
+            **self.admin_site.each_context(request),
+            "form": form,
+            "title": "Upload Multiple Images",
+            "opts": self.model._meta,
+        })
 
 
 @admin.register(Testimonial)

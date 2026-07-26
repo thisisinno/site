@@ -26,7 +26,13 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-development-on
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() == "true"
 
-ALLOWED_HOSTS = [host.strip() for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,testserver").split(",") if host.strip()]
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get(
+        "DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,testserver,.app.github.dev"
+    ).split(",")
+    if host.strip()
+]
 
 
 # Application definition
@@ -41,38 +47,26 @@ INSTALLED_APPS = [
     "app.apps.AppConfig",
 ]
 
-
-
-ALLOWED_HOSTS = ['*']  # Allow all hosts for development
-
-# CSRF settings
-CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to access CSRF cookie
-CSRF_COOKIE_SAMESITE = 'Lax'
-CSRF_TRUSTED_ORIGINS = [
-    'https://*.app.github.dev',  # Allow all GitHub Codespaces domains
-    'https://localhost:8000',
-    'https://localhost:6379',
-    'https://localhost:9000',
-]
-
-# CORS settings (if using django-cors-headers)
-CORS_ALLOWED_ORIGINS = [
-    'https://*.app.github.dev',  # Allow all GitHub Codespaces domains
-    'https://localhost:8000',
-    'https://localhost:9000',
-    'https://localhost:6379',
-]
-
-
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    # "django.middleware.csrf.CsrfViewMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get(
+        "DJANGO_CSRF_TRUSTED_ORIGINS", "https://*.app.github.dev"
+    ).split(",")
+    if origin.strip()
+]
+
+
+CSRF_COOKIE_SAMESITE = "Lax"
 
 ROOT_URLCONF = "config.urls"
 

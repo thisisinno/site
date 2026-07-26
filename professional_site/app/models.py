@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -28,7 +29,7 @@ class SiteProfile(TimeStampedModel):
     )
     professional_subtitle = models.CharField(max_length=240, blank=True, default="Advancing dignity, inclusion and community wellbeing")
     welcome_eyebrow = models.CharField(max_length=120, default="Social Work • Research • Community Impact")
-    welcome_heading = models.CharField(max_length=180, default="Welcome to My Professional Portfolio")
+    welcome_heading = models.CharField(max_length=180, default="Welcome to Jesca Social Work")
     hero_intro = models.TextField(default="I am a social work professional committed to strengthening individuals, families and communities through compassionate practice, research, advocacy and evidence-informed interventions.")
     mission_statement = models.TextField(default="To advance social justice, human dignity and community wellbeing through ethical social work practice, research, advocacy and sustainable community engagement.")
     professional_philosophy = models.TextField(default="Meaningful social change begins by listening to communities, respecting human dignity and transforming evidence into practical action.")
@@ -39,13 +40,26 @@ class SiteProfile(TimeStampedModel):
     professional_values = models.TextField(blank=True, default="Human dignity\nSocial justice\nIntegrity and accountability\nInclusion and participation\nEvidence-informed practice")
     profile_photo = models.ImageField(upload_to="profile/", blank=True)
     profile_photo_alt = models.CharField(max_length=220, blank=True, default="Professional portrait")
+    portrait_focus_x = models.PositiveSmallIntegerField(
+        default=50, validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="Horizontal crop focus, from 0 (left) to 100 (right).",
+    )
+    portrait_focus_y = models.PositiveSmallIntegerField(
+        default=25, validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="Vertical crop focus, from 0 (top) to 100 (bottom).",
+    )
+    portrait_zoom = models.DecimalField(
+        max_digits=3, decimal_places=2, default=1.08,
+        validators=[MinValueValidator(1.0), MaxValueValidator(1.3)],
+        help_text="Portrait crop zoom between 1.00 and 1.30.",
+    )
     secondary_photo = models.ImageField(upload_to="profile/", blank=True)
     cv_file = models.FileField(upload_to="cv/", blank=True, help_text="Upload a current PDF curriculum vitae.")
     email = models.EmailField(blank=True)
     secondary_email = models.EmailField(blank=True)
     phone = models.CharField(max_length=60, blank=True)
     location = models.CharField(max_length=180, blank=True)
-    website_name = models.CharField(max_length=140, default="Professional Portfolio")
+    website_name = models.CharField(max_length=140, default="Jesca Social Work")
     footer_statement = models.CharField(max_length=280, default="Ethical social work, rigorous research and meaningful community partnership.")
     copyright_name = models.CharField(max_length=160, blank=True)
     seo_title = models.CharField(max_length=180, blank=True)
@@ -183,6 +197,9 @@ class Article(TimeStampedModel):
     class Meta: ordering = ("-published_at", "-created_at")
     def __str__(self): return self.title
     def get_absolute_url(self): return reverse("article_detail", kwargs={"slug": self.slug})
+    @property
+    def reading_time(self):
+        return max(1, round(len(self.body.split()) / 220))
 
 
 class Publication(OrderedModel, TimeStampedModel):
@@ -206,6 +223,7 @@ class Publication(OrderedModel, TimeStampedModel):
     is_published = models.BooleanField(default=False)
     class Meta: ordering = ("display_order", "-publication_year", "title")
     def __str__(self): return f"{self.title} ({self.publication_year})"
+    def get_absolute_url(self): return reverse("publication_detail", kwargs={"slug": self.slug})
 
 
 class ResearchInterest(OrderedModel, TimeStampedModel):
@@ -278,8 +296,8 @@ class GalleryCategory(OrderedModel, TimeStampedModel):
 class GalleryItem(OrderedModel, TimeStampedModel):
     category = models.ForeignKey(GalleryCategory, related_name="items", on_delete=models.PROTECT)
     title = models.CharField(max_length=180)
-    image = models.ImageField(upload_to="gallery/")
-    alt_text = models.CharField(max_length=220)
+    image = models.ImageField(upload_to="gallery/", blank=True)
+    alt_text = models.CharField(max_length=220, blank=True)
     caption = models.TextField(blank=True)
     event_date = models.DateField(blank=True, null=True)
     location = models.CharField(max_length=160, blank=True)

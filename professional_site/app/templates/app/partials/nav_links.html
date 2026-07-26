@@ -1,10 +1,10 @@
 {% with current=request.resolver_match.url_name %}
-<li><a class="nav-link {% if current == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a></li>
-<li><a class="nav-link {% if current == 'about' %}active{% endif %}" href="{% url 'about' %}">About Me</a></li>
-<li><a class="nav-link {% if current == 'cv' %}active{% endif %}" href="{% url 'cv' %}">Curriculum Vitae</a></li>
+<li><a class="nav-link {% if current == 'home' %}active{% endif %}" href="{% url 'home' %}" {% if current == 'home' %}aria-current="page"{% endif %}>Home</a></li>
+<li><a class="nav-link {% if current == 'about' %}active{% endif %}" href="{% url 'about' %}" {% if current == 'about' %}aria-current="page"{% endif %}>About Me</a></li>
+<li><a class="nav-link {% if current == 'cv' %}active{% endif %}" href="{% url 'cv' %}" {% if current == 'cv' %}aria-current="page"{% endif %}>Curriculum Vitae</a></li>
 <li><a class="nav-link {% if current == 'articles' or current == 'article_detail' %}active{% endif %}" href="{% url 'articles' %}">Articles</a></li>
-<li><a class="nav-link {% if current == 'publications' %}active{% endif %}" href="{% url 'publications' %}">Research &amp; Publications</a></li>
-<li><a class="nav-link {% if current == 'experience' %}active{% endif %}" href="{% url 'experience' %}">Professional Experience</a></li>
+<li><a class="nav-link {% if current == 'publications' or current == 'publication_detail' %}active{% endif %}" href="{% url 'publications' %}">Research &amp; Publications</a></li>
+<li><a class="nav-link {% if current == 'experience' %}active{% endif %}" href="{% url 'experience' %}">Experience</a></li>
 <li><a class="nav-link {% if current == 'projects' or current == 'project_detail' %}active{% endif %}" href="{% url 'projects' %}">Projects</a></li>
 <li><a class="nav-link {% if current == 'gallery' %}active{% endif %}" href="{% url 'gallery' %}">Gallery</a></li>
 <li><a class="nav-link {% if current == 'testimonials' %}active{% endif %}" href="{% url 'testimonials' %}">Testimonials</a></li>

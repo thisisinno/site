@@ -1,4 +1,39 @@
-{% extends "app/base.html" %}{% block title %}Gallery | {{ site_profile.website_name }}{% endblock %}
-{% block content %}{% include "app/partials/page_header.html" with eyebrow="Gallery" title="Moments from practice, learning and community engagement" description="A visual record of verified professional activities and partnerships." %}
-<section class="section"><div class="shell"><nav class="filter-pills" aria-label="Gallery categories"><a class="{% if not selected_category %}active{% endif %}" href="{% url 'gallery' %}">All</a>{% for category in categories %}<a class="{% if selected_category == category.slug %}active{% endif %}" href="{% url 'gallery' %}?category={{ category.slug }}">{{ category.name }}</a>{% endfor %}</nav><div class="gallery-grid">{% for item in items %}<button class="gallery-item" type="button" data-bs-toggle="modal" data-bs-target="#galleryModal" data-image="{{ item.image.url }}" data-alt="{{ item.alt_text }}" data-caption="{{ item.caption }}"><img src="{{ item.image.url }}" alt="{{ item.alt_text }}" loading="lazy"><span>{{ item.title }}{% if item.location %}<small>{{ item.location }}</small>{% endif %}</span></button>{% empty %}<div class="empty-state"><i class="bi bi-images"></i><h2>The gallery is ready for real moments</h2><p>Upload captioned, accessible photographs in Admin.</p></div>{% endfor %}</div></div></section>
-<div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel"><div class="modal-dialog modal-xl modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h2 class="modal-title fs-5" id="galleryModalLabel">Gallery image</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><img id="galleryModalImage" src="" alt=""><p id="galleryModalCaption"></p></div></div></div></div>{% endblock %}
+{% extends "app/base.html" %}
+{% block title %}Gallery | {{ site_profile.website_name }}{% endblock %}
+{% block content %}
+{% include "app/partials/page_header.html" with eyebrow="Gallery" title="Moments from practice, learning and community engagement" description="A visual record of verified professional activities and partnerships." %}
+<section class="section">
+  <div class="shell">
+    <nav class="filter-pills" aria-label="Gallery categories">
+      <a class="{% if not selected_category %}active{% endif %}" href="{% url 'gallery' %}">All</a>
+      {% for category in categories %}<a class="{% if selected_category == category.slug %}active{% endif %}" href="{% url 'gallery' %}?category={{ category.slug }}">{{ category.name }}</a>{% endfor %}
+    </nav>
+    <div class="gallery-grid">
+      {% for item in items %}
+        {% if item.image %}
+          <button class="gallery-item" type="button" data-bs-toggle="modal" data-bs-target="#galleryModal"
+                  data-image="{{ item.image.url }}" data-alt="{{ item.alt_text }}" data-caption="{{ item.caption }}" data-reveal="scale">
+            <img src="{{ item.image.url }}" alt="{{ item.alt_text|default:item.title }}" loading="lazy">
+            <span>{{ item.title }}{% if item.location %}<small>{{ item.location }}</small>{% endif %}</span>
+          </button>
+        {% else %}
+          <article class="gallery-item" data-reveal="scale">
+            <div class="gallery-placeholder"><i class="bi bi-people"></i></div>
+            <span>{{ item.title }}<small>{{ item.caption }}</small></span>
+          </article>
+        {% endif %}
+      {% empty %}
+        <div class="empty-state"><i class="bi bi-images"></i><h2>The gallery is ready for real moments</h2><p>Upload captioned, accessible photographs in Admin.</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header"><h2 class="modal-title fs-5" id="galleryModalLabel">Gallery image</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+      <div class="modal-body"><img id="galleryModalImage" src="" alt=""><p id="galleryModalCaption"></p></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
